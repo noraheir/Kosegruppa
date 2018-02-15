@@ -1,0 +1,85 @@
+<!DOCTYPEhtml>
+<html lang="no">
+	<head>
+		<meta charset="UTF-8">
+		<title>Kosegruppa</title>
+	</head>
+	<body>
+    <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyDVH2GYoVBkKh0Dg4c_KbV-fWLbrWLQKO4",
+        authDomain: "chat-25577.firebaseapp.com",
+        databaseURL: "https://chat-25577.firebaseio.com",
+        projectId: "chat-25577",
+        storageBucket: "chat-25577.appspot.com",
+        messagingSenderId: "505180457279"
+      };
+      firebase.initializeApp(config);
+    </script>
+
+    <main>
+      <h1>Kosegruppa</h1>
+
+      <form id="skjema">
+        <label for="inpAvsender">Avsender:</label>
+        <input type="text" id="inpAvsender" required placeholder="Hvem er du?">
+        <br>
+        <br>
+        <label for="inpMelding">Melding:</label>
+        <input type="text"
+              id="inpMelding"
+              required placeholder="Hva ønsker du å si?">
+        <button type="submit">OK</button>
+      </form>
+
+      <article id="txtMeldinger">
+      </article>
+    </main>
+
+    <script>
+
+      // Henter ut HTML-objekt
+      var skjema = document.getElementById("skjema");
+      var inpAvsender = document.getElementById("inpAvsender");
+      var inpMelding = document.getElementById("inpMelding");
+      var txtMeldinger = document.getElementById("txtMeldinger");
+
+      // Henter roten til vår database
+      var database = firebase.database();
+      var meldinger = database.ref("meldinger");
+
+    /*  var nyMelding = {
+        "avsender" : "Ole",
+        "tekst" : "Velkommen til denne chatten!"
+      };
+
+      meldinger.push(nyMelding);
+    */
+
+      function visMelding(snapshot) {
+        var melding = snapshot.val();
+        txtMeldinger.innerHTML += `<p><b>${melding.avsender}</b>: <i>${melding.tekst}</i></p>`;
+      }
+
+      function regNyMelding(event) {
+        // Vi ønsker å forbli på den aktuelle nettsiden
+        event.preventDefault();
+
+        var nyMelding = {
+          "avsender" : inpAvsender.value,
+          "tekst" : inpMelding.value
+        };
+
+      meldinger.push(nyMelding);
+      inpMelding.value = "";
+      }
+
+      // Registrerer lytterfunksjoner
+      meldinger.on("child_added", visMelding);
+      skjema.onsubmit = regNyMelding;
+    </script>
+
+	</body>
+</html>
